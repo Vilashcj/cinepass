@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "442439945108",
+    "project_id": "cinepass-f19bd",
+    "storage_bucket": "cinepass-f19bd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:442439945108:android:5cea21a1e18bd0d7795d81",
+        "android_client_info": {
+          "package_name": "com.example.cinepass"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxaPwhPZwsoFGjSJ1EUWvh8tUVbFwjX1g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
