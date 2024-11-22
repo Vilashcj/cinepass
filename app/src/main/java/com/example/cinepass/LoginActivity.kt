@@ -122,14 +122,14 @@ fun LoginScreen(onRegisterClick: () -> Unit) {
             Text(
                 text = "or login with",
                 fontSize = 14.sp,
-                color = Color.Gray,
+                color = Color.Black,
                 modifier = Modifier.padding(vertical = 16.dp)
             )
 
             // Mobile and Google login options as styled buttons
             LoginOption(
                 text = "Mobile",
-                backgroundColor = Color.Gray,
+                backgroundColor = Color.Green,
                 onClick = { /* Handle login with mobile action */ }
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -144,7 +144,7 @@ fun LoginScreen(onRegisterClick: () -> Unit) {
             Text(
                 text = "Don't have an account? Register",
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.primary,
+                color = Color.Black,
                 modifier = Modifier.clickable { onRegisterClick() }
             )
         }
