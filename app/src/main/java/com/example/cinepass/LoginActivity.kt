@@ -2,6 +2,7 @@ package com.example.cinepass
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -16,11 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cinepass.ui.theme.CinePassTheme
@@ -47,6 +47,7 @@ class LoginActivity : ComponentActivity() {
 @Composable
 fun LoginScreen(onRegisterClick: () -> Unit) {
     var email by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
     // Background Image and Overlay
     Box(
@@ -86,20 +87,26 @@ fun LoginScreen(onRegisterClick: () -> Unit) {
             )
 
             // Email Input Field
-            OutlinedTextField(
+            TextField(
                 value = email,
                 onValueChange = { email = it },
                 label = { Text("Email Address") },
-                singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp)
+                    .padding(16.dp),
+                shape = MaterialTheme.shapes.small // Optional: shape with no round corners
             )
 
             // Continue Button
             Button(
-                onClick = { /* Handle continue with email action */ },
+                onClick = {
+                    if (email.isNotEmpty()) {
+                        Toast.makeText(context, "Email entered: $email", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Please enter a valid email", Toast.LENGTH_SHORT).show()
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
@@ -158,16 +165,6 @@ fun LoginOption(text: String, backgroundColor: Color, onClick: () -> Unit) {
             text = text,
             fontWeight = FontWeight.Bold,
             color = Color.White
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    CinePassTheme {
-        LoginScreen(
-            onRegisterClick = { /* Preview Register click action */ }
         )
     }
 }
