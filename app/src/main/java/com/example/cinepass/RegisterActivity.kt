@@ -41,7 +41,7 @@ class RegisterActivity : ComponentActivity() {
 
 @Composable
 fun RegisterScreen() {
-    var fullName by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var mobileNumber by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -62,7 +62,7 @@ fun RegisterScreen() {
             contentScale = ContentScale.Crop
         )
 
-        // Semi-transparent overlay for lower contrast
+        // Semi-transparent overlay
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -85,11 +85,11 @@ fun RegisterScreen() {
                     .padding(bottom = 24.dp)
             )
 
-            // Full Name Input Field
+            // Username Input Field
             OutlinedTextField(
-                value = fullName,
-                onValueChange = { fullName = it },
-                label = { Text("Full Name") },
+                value = username,
+                onValueChange = { username = it },
+                label = { Text("Username") },
                 singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -164,7 +164,7 @@ fun RegisterScreen() {
 
             // Register Button
             Button(
-                onClick = { /* Handle registration action */ },
+                onClick = { /* Handle registration logic */ },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
@@ -176,7 +176,7 @@ fun RegisterScreen() {
                 )
             }
 
-            // Text "Or" with bold and white styling
+            // Text "Or"
             Text(
                 text = "Or",
                 style = TextStyle(
@@ -189,7 +189,7 @@ fun RegisterScreen() {
 
             // Sign up with Google Button
             Button(
-                onClick = { /* Google Sign-Up Logic */ },
+                onClick = { /* Handle Google Sign-Up */ },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
