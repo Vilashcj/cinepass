@@ -49,7 +49,6 @@ fun RegisterScreen() {
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
 
-    // Background Image and Overlay
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -67,7 +66,7 @@ fun RegisterScreen() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.2f)) // Light overlay for reduced contrast
+                .background(Color.Black.copy(alpha = 0.2f))
         )
 
         Column(
@@ -77,12 +76,12 @@ fun RegisterScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Logo image at the top
+            // Logo Image
             Image(
-                painter = painterResource(id = R.drawable.logo), // Replace with your logo's resource ID
+                painter = painterResource(id = R.drawable.logo),
                 contentDescription = "Logo",
                 modifier = Modifier
-                    .size(150.dp) // Adjust as needed
+                    .size(150.dp)
                     .padding(bottom = 24.dp)
             )
 
@@ -172,6 +171,31 @@ fun RegisterScreen() {
             ) {
                 Text(
                     text = "Register",
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+            }
+
+            // Text "Or" with bold and white styling
+            Text(
+                text = "Or",
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                ),
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
+            // Sign up with Google Button
+            Button(
+                onClick = { /* Google Sign-Up Logic */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                Text(
+                    text = "Sign up with Google",
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
