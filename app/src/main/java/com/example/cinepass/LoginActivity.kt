@@ -24,46 +24,65 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cinepass.ui.theme.CinePassTheme
+import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : ComponentActivity() {
+
+    private lateinit var auth: FirebaseAuth // Initialize FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        auth = FirebaseAuth.getInstance() // Get an instance of FirebaseAuth
         setContent {
             CinePassTheme {
                 LoginScreen(
                     onRegisterClick = { navigateToRegister() },
-                    onLoginClick = { navigateToHome() }
+                    onLoginClick = { email, password -> loginUser(email, password) }
                 )
             }
         }
     }
 
-    // Navigate to RegisterActivity
+    private fun loginUser(email: String, password: String) {
+        if (email.isNotEmpty() && password.isNotEmpty()) {
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
+                        navigateToHome()
+                    } else {
+                        Toast.makeText(this, "Login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+        } else {
+            Toast.makeText(this, "Please fill out all fields", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun navigateToRegister() {
         val intent = Intent(this, RegisterActivity::class.java)
         startActivity(intent)
     }
 
-    // Navigate to HomeActivity after login
     private fun navigateToHome() {
         val intent = Intent(this, HomeActivity::class.java)
         startActivity(intent)
-        finish() // Optionally finish LoginActivity to prevent back navigation
+        finish()
     }
 }
 
+
 @Composable
-fun LoginScreen(onRegisterClick: () -> Unit, onLoginClick: () -> Unit) {
+fun LoginScreen(onRegisterClick: () -> Unit, onLoginClick: (String, String) -> Unit) {
     var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     val context = LocalContext.current
 
-    // Background Image and Overlay
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         val background: Painter = painterResource(id = R.drawable.background)
 
-        // Background image
         Image(
             painter = background,
             contentDescription = null,
@@ -71,11 +90,10 @@ fun LoginScreen(onRegisterClick: () -> Unit, onLoginClick: () -> Unit) {
             contentScale = ContentScale.Crop
         )
 
-        // Semi-transparent overlay to reduce contrast
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White.copy(alpha = 0.2f)) // Light overlay for low contrast
+                .background(Color.White.copy(alpha = 0.2f))
         )
 
         Column(
@@ -85,16 +103,14 @@ fun LoginScreen(onRegisterClick: () -> Unit, onLoginClick: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Logo image at the top
             Image(
-                painter = painterResource(id = R.drawable.logo), // Replace with actual logo resource ID
+                painter = painterResource(id = R.drawable.logo),
                 contentDescription = "Logo",
                 modifier = Modifier
-                    .size(300.dp) // Adjust size as needed
+                    .size(300.dp)
                     .padding(bottom = 24.dp)
             )
 
-            // Email Input Field (optional for now)
             TextField(
                 value = email,
                 onValueChange = { email = it },
@@ -102,16 +118,22 @@ fun LoginScreen(onRegisterClick: () -> Unit, onLoginClick: () -> Unit) {
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                shape = MaterialTheme.shapes.small // Optional: shape with no round corners
+                    .padding(16.dp)
             )
 
-            // Login Button
+            TextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Password") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            )
+
             Button(
                 onClick = {
-                    // Skip Firebase or any validation, just navigate to HomeActivity
-                    Toast.makeText(context, "Logging in...", Toast.LENGTH_SHORT).show()
-                    onLoginClick() // Navigate to HomeActivity
+                    onLoginClick(email, password)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -124,29 +146,6 @@ fun LoginScreen(onRegisterClick: () -> Unit, onLoginClick: () -> Unit) {
                 )
             }
 
-            // "Or login with" separator
-            Text(
-                text = "or login with",
-                fontSize = 14.sp,
-                color = Color.Black,
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
-
-            // Mobile and Google login options as styled buttons
-            LoginOption(
-                text = "Mobile",
-                backgroundColor = Color.Green,
-                onClick = { /* Handle login with mobile action */ }
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            LoginOption(
-                text = "Google",
-                backgroundColor = Color(0xFF4285F4), // Google blue color
-                onClick = { /* Handle login with Google action */ }
-            )
-
-            // Register Option
-            Spacer(modifier = Modifier.height(24.dp))
             Text(
                 text = "Don't have an account? Register",
                 fontSize = 14.sp,
@@ -156,6 +155,7 @@ fun LoginScreen(onRegisterClick: () -> Unit, onLoginClick: () -> Unit) {
         }
     }
 }
+
 
 // LoginOption composable for reusable button style
 @Composable

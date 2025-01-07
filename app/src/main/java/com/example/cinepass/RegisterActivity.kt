@@ -1,6 +1,8 @@
 package com.example.cinepass
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -17,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -27,20 +30,47 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cinepass.ui.theme.CinePassTheme
+import com.google.firebase.auth.FirebaseAuth
 
 class RegisterActivity : ComponentActivity() {
+
+    private lateinit var auth: FirebaseAuth // FirebaseAuth instance
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        auth = FirebaseAuth.getInstance() // Initialize FirebaseAuth
+
         setContent {
             CinePassTheme {
-                RegisterScreen()
+                RegisterScreen { email, password ->
+                    registerUser(email, password)
+                }
             }
         }
     }
+
+    private fun registerUser(email: String, password: String) {
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show()
+                    navigateToLogin()
+                } else {
+                    Toast.makeText(this, "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
+    private fun navigateToLogin() {
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
 }
 
+
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(onRegisterClick: (String, String) -> Unit) {
     var username by remember { mutableStateOf("") }
     var mobileNumber by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -48,13 +78,13 @@ fun RegisterScreen() {
     var confirmPassword by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         val background: Painter = painterResource(id = R.drawable.background)
 
-        // Background image
         Image(
             painter = background,
             contentDescription = null,
@@ -62,7 +92,6 @@ fun RegisterScreen() {
             contentScale = ContentScale.Crop
         )
 
-        // Semi-transparent overlay
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -76,7 +105,6 @@ fun RegisterScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Logo Image
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "Logo",
@@ -85,7 +113,6 @@ fun RegisterScreen() {
                     .padding(bottom = 24.dp)
             )
 
-            // Username Input Field
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
@@ -96,7 +123,6 @@ fun RegisterScreen() {
                     .padding(bottom = 16.dp)
             )
 
-            // Mobile Number Input Field
             OutlinedTextField(
                 value = mobileNumber,
                 onValueChange = { mobileNumber = it },
@@ -108,7 +134,6 @@ fun RegisterScreen() {
                     .padding(bottom = 16.dp)
             )
 
-            // Email Input Field
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
@@ -120,7 +145,6 @@ fun RegisterScreen() {
                     .padding(bottom = 16.dp)
             )
 
-            // Password Input Field with visibility toggle
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -141,7 +165,6 @@ fun RegisterScreen() {
                     .padding(bottom = 16.dp)
             )
 
-            // Confirm Password Input Field with visibility toggle
             OutlinedTextField(
                 value = confirmPassword,
                 onValueChange = { confirmPassword = it },
@@ -162,9 +185,20 @@ fun RegisterScreen() {
                     .padding(bottom = 16.dp)
             )
 
-            // Register Button
             Button(
-                onClick = { /* Handle registration logic */ },
+                onClick = {
+                    when {
+                        username.isEmpty() || mobileNumber.isEmpty() || email.isEmpty() || password.isEmpty() -> {
+                            Toast.makeText(context, "Please fill out all fields", Toast.LENGTH_SHORT).show()
+                        }
+                        password != confirmPassword -> {
+                            Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
+                        }
+                        else -> {
+                            onRegisterClick(email, password)
+                        }
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
@@ -176,7 +210,6 @@ fun RegisterScreen() {
                 )
             }
 
-            // Text "Or"
             Text(
                 text = "Or",
                 style = TextStyle(
@@ -187,7 +220,6 @@ fun RegisterScreen() {
                 modifier = Modifier.padding(vertical = 8.dp)
             )
 
-            // Sign up with Google Button
             Button(
                 onClick = { /* Handle Google Sign-Up */ },
                 modifier = Modifier
@@ -204,10 +236,4 @@ fun RegisterScreen() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun RegisterScreenPreview() {
-    CinePassTheme {
-        RegisterScreen()
-    }
-}
+

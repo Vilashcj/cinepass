@@ -163,6 +163,7 @@ fun MoviePosterItem(movieName: String, posterRes: Int, onBookClick: () -> Unit) 
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SeatSelectionTab(onConfirmClick: (Int, List<Int>) -> Unit, onBackClick: () -> Unit) {
     val rows = 5
@@ -270,6 +271,7 @@ fun CategoryButton(category: String, selectedCategory: String, onClick: (String)
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaymentTab(totalPrice: Int, selectedSeats: List<Int>, onBackClick: () -> Unit) {
     var selectedPaymentMethod by remember { mutableStateOf("Credit Card") }
