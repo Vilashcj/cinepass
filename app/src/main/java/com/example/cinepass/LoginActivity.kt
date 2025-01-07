@@ -31,7 +31,8 @@ class LoginActivity : ComponentActivity() {
         setContent {
             CinePassTheme {
                 LoginScreen(
-                    onRegisterClick = { navigateToRegister() }
+                    onRegisterClick = { navigateToRegister() },
+                    onLoginClick = { navigateToHome() }
                 )
             }
         }
@@ -42,10 +43,17 @@ class LoginActivity : ComponentActivity() {
         val intent = Intent(this, RegisterActivity::class.java)
         startActivity(intent)
     }
+
+    // Navigate to HomeActivity after login
+    private fun navigateToHome() {
+        val intent = Intent(this, HomeActivity::class.java)
+        startActivity(intent)
+        finish() // Optionally finish LoginActivity to prevent back navigation
+    }
 }
 
 @Composable
-fun LoginScreen(onRegisterClick: () -> Unit) {
+fun LoginScreen(onRegisterClick: () -> Unit, onLoginClick: () -> Unit) {
     var email by remember { mutableStateOf("") }
     val context = LocalContext.current
 
@@ -86,7 +94,7 @@ fun LoginScreen(onRegisterClick: () -> Unit) {
                     .padding(bottom = 24.dp)
             )
 
-            // Email Input Field
+            // Email Input Field (optional for now)
             TextField(
                 value = email,
                 onValueChange = { email = it },
@@ -98,21 +106,19 @@ fun LoginScreen(onRegisterClick: () -> Unit) {
                 shape = MaterialTheme.shapes.small // Optional: shape with no round corners
             )
 
-            // Continue Button
+            // Login Button
             Button(
                 onClick = {
-                    if (email.isNotEmpty()) {
-                        Toast.makeText(context, "Email entered: $email", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, "Please enter a valid email", Toast.LENGTH_SHORT).show()
-                    }
+                    // Skip Firebase or any validation, just navigate to HomeActivity
+                    Toast.makeText(context, "Logging in...", Toast.LENGTH_SHORT).show()
+                    onLoginClick() // Navigate to HomeActivity
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
             ) {
                 Text(
-                    text = "Continue",
+                    text = "Login",
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )

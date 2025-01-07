@@ -59,5 +59,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation("androidx.compose.material:material-icons-extended:1.0.0")
+    implementation (libs.ui) // Use the latest version
+    implementation (libs.androidx.foundation)
+    implementation(libs.androidx.material.icons.extended)
 }
