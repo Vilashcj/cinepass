@@ -68,7 +68,8 @@ fun HomeScreen() {
                 2 -> PaymentTab(
                     totalPrice = totalPrice,
                     selectedSeats = selectedSeats,
-                    onBackClick = { selectedTab = 1 }
+                    onBackClick = { selectedTab = 1 },
+                    onPaymentSuccess = { selectedTab = 0 } // Navigates back to home screen
                 )
             }
         }
@@ -273,7 +274,7 @@ fun CategoryButton(category: String, selectedCategory: String, onClick: (String)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PaymentTab(totalPrice: Int, selectedSeats: List<Int>, onBackClick: () -> Unit) {
+fun PaymentTab(totalPrice: Int, selectedSeats: List<Int>, onBackClick: () -> Unit, onPaymentSuccess: () -> Unit) {
     var selectedPaymentMethod by remember { mutableStateOf("Credit Card") }
     var cardNumber by remember { mutableStateOf("") }
     var expiryDate by remember { mutableStateOf("") }
@@ -368,7 +369,10 @@ fun PaymentTab(totalPrice: Int, selectedSeats: List<Int>, onBackClick: () -> Uni
                     title = { Text("Payment Completed") },
                     text = { Text("You'll receive the ticket via email.") },
                     confirmButton = {
-                        Button(onClick = { showPopup = false }) {
+                        Button(onClick = {
+                            showPopup = false
+                            onPaymentSuccess() // Navigate to home
+                        }) {
                             Text("OK")
                         }
                     }
@@ -377,6 +381,7 @@ fun PaymentTab(totalPrice: Int, selectedSeats: List<Int>, onBackClick: () -> Uni
         }
     }
 }
+
 
 
 
