@@ -26,29 +26,36 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.cinepass.ui.theme.CinePassTheme
 
+import androidx.activity.viewModels
+import com.example.cinepass.room.BookingViewModel
+
+
 class HomeActivity : ComponentActivity() {
+    private val bookingViewModel: BookingViewModel by viewModels() // Use `viewModels()`
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             CinePassTheme {
-                HomeScreen()
+                HomeScreen(bookingViewModel)
             }
         }
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(viewModel: BookingViewModel) {
     var selectedTab by remember { mutableStateOf(0) }
-    var totalPrice by remember { mutableStateOf(0) }
-    var selectedSeats by remember { mutableStateOf(emptyList<Int>()) }
+
+    LaunchedEffect(Unit) {
+        viewModel.loadLastBooking() // Load saved booking data when HomeScreen is created
+    }
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("CinePass") }
-            )
+            TopAppBar(title = { Text("CinePass") })
         },
         bottomBar = {
             BottomNavigationBar(selectedTab = selectedTab) { selectedTab = it }
@@ -59,22 +66,25 @@ fun HomeScreen() {
                 0 -> MoviesTab(onBookClick = { selectedTab = 1 })
                 1 -> SeatSelectionTab(
                     onConfirmClick = { price, seats ->
-                        totalPrice = price
-                        selectedSeats = seats
+                        viewModel.saveBooking(price, seats) // Save seats & price
                         selectedTab = 2
                     },
                     onBackClick = { selectedTab = 0 }
                 )
                 2 -> PaymentTab(
-                    totalPrice = totalPrice,
-                    selectedSeats = selectedSeats,
+                    totalPrice = viewModel.totalPrice,
+                    selectedSeats = viewModel.selectedSeats,
                     onBackClick = { selectedTab = 1 },
-                    onPaymentSuccess = { selectedTab = 0 } // Navigates back to home screen
+                    onPaymentSuccess = {
+                        viewModel.clearBooking() // Clear booking after payment
+                        selectedTab = 0
+                    }
                 )
             }
         }
     }
 }
+
 
 
 
